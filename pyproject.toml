@@ -1,0 +1,23 @@
+[project]
+name = "crypto-analysis-tool"
+version = "0.1.0"
+description = "I want to build something interesting."
+readme = "README.md"
+authors = [
+    { name = "Cynthia Ukawu", email = "cynthiaukawu@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "modal>=1.6.3",
+    "openai>=3.46.0",
+    "python-dotenv>=1.2.4",
+    "supabase>=2.34.1",
+    "websockets>=15.0.1",
+]
+
+[project.scripts]
+crypto-analysis-tool = "crypto_analysis_tool:main"
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
