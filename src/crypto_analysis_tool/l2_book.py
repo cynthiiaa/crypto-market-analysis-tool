@@ -70,7 +70,6 @@ class KrakenL2Buffer:
 
         while True:
             try:
-                logger.info("Connected to Kraken L2 WebSocket")
                 async with websockets.connect(uri, ping_interval=20, ping_timeout=10) as ws:
                     await ws.send(json.dumps(subscribe_msg))
                     logger.info("Connected to Kraken L2 WebSocket and subscribed")
@@ -89,7 +88,7 @@ class KrakenL2Buffer:
                             self.asks.clear()
                             self.update_book(self.asks, payload["as"])
                             self.update_book(self.bids, payload["bs"])
-                            logger.info("\nInitial L2 Snapshot Loaded")
+                            logger.info("Initial L2 Snapshot Loaded")
                         else:
                             if "a" in payload:
                                 self.update_book(self.asks, payload["a"])
@@ -112,7 +111,7 @@ async def keyboard_trigger(buffer_instance):
     await asyncio.sleep(3)
 
     while True:
-        user_input = await loop.run_in_executor(None, input, "Press [ENTER] to simulate a news event and dump buffer...\n")
+        user_input = await loop.run_in_executor(None, input, "Press [ENTER] to simulate a news event and dump buffer...")
         
         if user_input.strip().lower() == "q":
             logger.info("Shutting Down...")
@@ -124,14 +123,14 @@ async def keyboard_trigger(buffer_instance):
 
         snapshot = list(buffer_instance.history)
         if len(snapshot) == 0:
-            logger.info("Buffer is still empty. Waiting for market data...\n")
+            logger.info("Buffer is still empty. Waiting for market data...")
             continue
 
         filename = f"l2_snapshot_{int(time.time())}.json"
         with open(filename, "w") as f:
             json.dump(snapshot, f, indent=4)
 
-        logger.info(f"\n EVENT TRIGGERED! Dumped last 60 seconds of L2 data ({len(snapshot)} rows) to {filename}\n")
+        logger.info(f"EVENT TRIGGERED! Dumped last 60 seconds of L2 data ({len(snapshot)} rows) to {filename}")
 
 
 async def main():

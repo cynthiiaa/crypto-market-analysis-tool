@@ -48,7 +48,8 @@ You must return ONLY a valid JSON object using this exact schema:
     "sentiment": INT,
     "is_actionable_event": BOOLEAN,
     "high_volatility_event": BOOLEAN,
-    "event_description": STRING
+    "event_description": STRING,
+    "article_id": CONCAT(pubDate, Source)
 }
 If the headline is spam or macro news, set "core_event_category" to "NOISE" and "high_volatility_event" to false.
 """
@@ -82,7 +83,7 @@ async def analyze_headline(session, title):
     return None
 
 async def poll_news_feed(shared_buffer):
-    logger.info("\nBooting up news aggregator...")
+    logger.info("Booting up news aggregator...")
 
     async with aiohttp.ClientSession() as session:
         # populate the seen_articles with historical articles
@@ -95,9 +96,9 @@ async def poll_news_feed(shared_buffer):
                         if article_id:
                             seen_articles.add(article_id)
 
-                    logger.info(f"\nLoaded {len(seen_articles)} historical articles. Now listening for breaking news...")
+                    logger.info(f"Loaded {len(seen_articles)} historical articles. Now listening for breaking news...")
         except Exception as e:
-            logger.error(f"\nError fetching initial cache: {e}")
+            logger.error(f"Error fetching initial cache: {e}")
 
         # continuous polling
         while True:
@@ -113,29 +114,24 @@ async def poll_news_feed(shared_buffer):
                                 seen_articles.add(article_id)
 
                                 title = article.get("title", "No Title")
-                                logger.info(f"\nBreaking News: {title}")
+                                logger.info(f"Breaking News: {title}")
 
                                 # send headline to vLLM endpoint
                                 analysis = await analyze_headline(session, title)
 
-                                if analysis and analysis.get("events"):
-                                    for event in analysis["events"]:
-                                        if event.get("is_actionable"):
-                                            logger.info(f"ACTIONABLE EVENT DETECTED: {event.get('primary_asset_ticker')} | Sentiment: {event.get('sentiment_score')}")
-                                            
-                                            flushed_metrics = []
-                                            while not shared_buffer.empty():
-                                                try:
-                                                    metric = shared_buffer.get_nowait()
-                                                    flushed_metrics.append(metric)
-                                                    shared_buffer.task_done()
-                                                except asyncio.QueueEmpty:
-                                                    break
-
-                                            flush_to_supabase(analysis, title, flushed_metrics)
+                                if analysis and analysis.get("is_actionable_event") is True:
+                                    logger.info(f"ACTIONABLE EVENT DETECTED: {analysis.get('primary_asset_ticker')} | Sentiment: {analysis.get('sentiment_score')}")
+                                    flushed_metrics = []
+                                    while not shared_buffer.empty():
+                                        try:
+                                            flushed_metrics.append(shared_buffer.get_nowait())
+                                            shared_buffer.task_done()
+                                        except asyncio.QueueEmpty:
+                                            break
+                                    flush_to_supabase(analysis, title, flushed_metrics)
             
             except Exception as e:
-                logger.error(f"Error polling API: {e}")
+                logger.error(f"Exception occurred inside news feed loop cycle", exc_info=True)
 
             # poll every 15 seconds
             await asyncio.sleep(15)

@@ -29,18 +29,30 @@ def flush_to_supabase(event_data, raw_headline, buffer_snapshot):
         "event_details": event_data.get("event_description", "")
     }).execute()
 
-    event_id = event_res.data[0]["id"]
+    try:
 
-    snapshot_rows = [
-        {
-            "event_id": event_id,
-            "timestamp": datetime.fromtimestamp(t[0] / 1000.0).isoformat(),
-            "bid_price": t[1],
-            "ask_price": t[2]
-        }
-        for t in buffer_snapshot
-    ]
+        if not event_res.data:
+            logging.error(f"Failed to retrieve inserted {event_data.get("article_id")} from Supabase response.")
+            return
 
-    if snapshot_rows:
-        supabase.table("liquidity_snapshots").insert(snapshot_rows).execute()
-        logger.info(f"Wrote {len(snapshot_rows)} L2 ticks to Supabase")
+        event_id = event_res.data[0]["id"]
+
+        snapshot_rows = [
+            {
+                "event_id": event_id,
+                "timestamp": datetime.fromtimestamp(snapshot["timestamp_ms"] / 1000.0).isoformat(),
+                "bid_price": snapshot["best_bid"],
+                "ask_price": snapshot["best_ask"],
+                "spread_bps": snapshot["spread_bps"],
+                "bid_depth": snapshot["bid_depth_10bps"],
+                "ask_depth": snapshot["ask_depth_10bps"]
+            }
+            for snapshot in buffer_snapshot
+        ]
+
+        if snapshot_rows:
+            supabase.table("liquidity_snapshots").insert(snapshot_rows).execute()
+            logger.info(f"Successfully wrote {len(snapshot_rows)} L2 ticks to Supabase")
+
+    except Exception as e:
+        logger.error("Failed writing to Supabase", exc_info=True)
