@@ -12,6 +12,8 @@ wheels/
 
 .env
 
+REQUIRED_READING.md
+
 *.json
 .python-version
 *.log

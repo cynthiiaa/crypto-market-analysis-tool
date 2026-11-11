@@ -44,8 +44,8 @@ def flush_to_supabase(event_data, raw_headline, buffer_snapshot):
                 "bid_price": snapshot["best_bid"],
                 "ask_price": snapshot["best_ask"],
                 "spread_bps": snapshot["spread_bps"],
-                "bid_depth": snapshot["bid_depth_10bps"],
-                "ask_depth": snapshot["ask_depth_10bps"]
+                "bid_depth_10bps": snapshot["bid_depth_10bps"],
+                "ask_depth_10bps": snapshot["ask_depth_10bps"]
             }
             for snapshot in buffer_snapshot
         ]
