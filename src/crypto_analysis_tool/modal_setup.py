@@ -7,7 +7,7 @@ vllm_image = (
          .env({"HF_HUB_ENABLE_HF_TRANSFER": "1"})
 )
 
-app = modal.App("vllm-market-classifier")
+app = modal.App("crypto-market-news-signal")
 
 MODEL_NAME = "meta-llama/Llama-3.1-8B-Instruct"
 hf_cache_vol = modal.Volume.from_name("huggingface-cache", create_if_missing=True) # better to cache the 16GB model weights instead of redownloading them all the time

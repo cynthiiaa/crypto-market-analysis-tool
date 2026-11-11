@@ -42,6 +42,9 @@ class KrakenL2Buffer:
 
         best_bid = sorted_bids[0]
         best_ask = sorted_asks[0]
+        if best_bid >= best_ask:
+            return None
+
         spread_bps = ((best_ask - best_bid) / best_bid) * 10000
 
         mid_price = (best_bid + best_ask) / 2

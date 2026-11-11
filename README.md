@@ -38,7 +38,7 @@ Right now I'm only tracking Bitcoin against the USD. I plan to add other coins l
 ![alt text](./src/assets/image.gif "Quick Demo of Project")
 
 ### Modal
-Modal is a code-first approach to setting up cloud infrastructure like GPUs, network ports, and container dependencies. If you aren't a fan of messing around with static files Dockerfiles/YAML files then consider tinkering with Modal.
+Modal is a code-first approach to setting up cloud infrastructure like GPUs, network ports, and container dependencies. If you aren't a fan of messing around with static files like Dockerfiles/YAML files then consider tinkering with Modal.
 
 Also, Modal functions are serverless, so GPU will spin down completely when there's no new events to process.
 
