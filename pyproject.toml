@@ -8,9 +8,12 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "marimo>=0.25.2",
     "modal>=1.6.3",
     "nicegui>=4.0.0",
     "openai>=3.46.0",
+    "pandas>=3.1.1",
+    "plotly>=7.1.0",
     "python-dotenv>=1.2.4",
     "supabase>=2.34.1",
     "websockets>=15.0.1",

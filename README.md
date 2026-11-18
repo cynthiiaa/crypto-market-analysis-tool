@@ -6,18 +6,33 @@ Create a lightweight, automated pipeline that captures both high-frequency crypt
 ## Caveat
 Right now I'm only tracking Bitcoin against the USD. I plan to add other coins later.
 
+## What I Have So Far
+
+![alt text](./src/assets/image.gif "Quick Demo of Project")
+
 ## Tech Stack:
-**Compute:** Digital Ocean GPU Droplet
+**Compute:**
+* Digital Ocean GPU Droplet
 
-**AI Inference:** vLLM and Modal
+**AI Inference:**
+* vLLM
+* Modal
 
-**Database:** Supabase
+**Database:**
+* Supabase
 
-**Dependency Management:** uv
+**Dependency Management:** 
+* uv
 
-**Data Feeds:** Kraken WebSocket API and Crypto News RSS Feeds
+**Data Feeds:**
+* Kraken WebSocket API
+* Crypto News RSS Feeds
 
-**UI**: niceGUI
+**UI:**
+* niceGUI
+
+**Data Analytics:**
+* Marimo
 
 ## Scripts
 ### `src/crypto_analysis_tool/...`
@@ -33,11 +48,13 @@ Right now I'm only tracking Bitcoin against the USD. I plan to add other coins l
 
 `news_feed.py`: Sending crypto news feeds to the LLM to rank each event on whether or not it's actionable.
 
-## What I Have So Far
+## Models
+### meta-llama/Llama-3.1-8B-Instruct
+Used for real-time news parsing.
+### Olmo-3.1-32B-Instruct
+Used for the interactive Quant AI Assistant.
 
-![alt text](./src/assets/image.gif "Quick Demo of Project")
-
-### Modal
+#### Modal
 Modal is a code-first approach to setting up cloud infrastructure like GPUs, network ports, and container dependencies. If you aren't a fan of messing around with static files like Dockerfiles/YAML files then consider tinkering with Modal.
 
 Also, Modal functions are serverless, so GPU will spin down completely when there's no new events to process.
@@ -51,6 +68,19 @@ python -m modal setup
 
 # deploying to the cloud
 modal deploy <APP_SCRIPT>
+```
+
+#### Marimo
+
+Marimo is like a cross between Jupyter Notebooks and Streamlit, but it doesn't inherent the annoying aspects of the two. 
+
+With Jupyter Notebooks you can run into out-of-order bugs. With Streamlit you'd need to re-run the entire script on every click. Marimo is reactive (no out-of-order errors); it instantly recalculates only the speicific cells downstream of that change (it uses a dependency graph).
+
+Marimo also saves your notebooks as `.py` files instead of massive `.ipynb` JSON files. You can also turn your Marimo app into a web app by running `marimo run <APP.py>` --> you're using the same notebook you were editing.
+
+```bash
+# edit a marimo notebook
+marimo edit <APP.py>
 ```
 
 Python is insufferable when it comes to finding local packages 🤦🏾‍♀️
